@@ -21,12 +21,11 @@ This project simulates core inventory mechanics such as item stacking, splitting
 
 ---
 
-## 🎥 GIF Preview
+## 🏷️ Tech Badges
 
-![Inventory Preview](preview.gif)
-
-> 💡 Tip: Record your screen using tools like OBS Studio or ScreenToGif and export as `preview.gif`
-> Then place it in your project root folder.
+![HTML5](https://img.shields.io/badge/HTML5-Structure-orange?logo=html5\&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-Styling-blue?logo=css3\&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-Logic-yellow?logo=javascript\&logoColor=black)
 
 ---
 
@@ -43,13 +42,13 @@ This project simulates core inventory mechanics such as item stacking, splitting
 
 1. Clone the repository:
 
-```bash
+```bash id="z3y4ok"
 git clone https://github.com/your-username/minecraft-web-inventory.git
 ```
 
 2. Open the project folder:
 
-```bash
+```bash id="d8f6vn"
 cd minecraft-web-inventory
 ```
 
@@ -88,7 +87,7 @@ https://github.com/InventivetalentDev/minecraft-assets
 * Inventory is stored in a JavaScript array
 * Each slot contains:
 
-```js
+```js id="n9g2ld"
 {
   img: "url",
   count: number,
@@ -115,7 +114,7 @@ https://github.com/InventivetalentDev/minecraft-assets
 ## 🤝 Contributing
 
 Pull requests are welcome.
-If you want to improve the system, feel free to fork and submit ideas.
+Feel free to fork and improve the project.
 
 ---
 
