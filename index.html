@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Minecraft UI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: 'Press Start 2P';
+}
+
+.bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('fundo.png') center/cover;
+  z-index: -1;
+}
+
+/* LOGIN */
+.login {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  padding: 30px;
+  border: 2px solid #555;
+  text-align: center;
+  color: white;
+}
+
+.login input {
+  width: 200px;
+  padding: 10px;
+  margin-top: 10px;
+  background: #111;
+  border: 2px solid #444;
+  color: white;
+}
+
+.login button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #2b2b2b;
+  border: 2px solid #555;
+  color: white;
+  cursor: pointer;
+}
+
+.loading {
+  display: none;
+  margin-top: 15px;
+  font-size: 10px;
+}
+
+/* BAÚ */
+.chest {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  text-align: center;
+}
+
+.chest img {
+  width: 140px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0px 20px 25px rgba(0,0,0,0.9));
+}
+
+.chest::after {
+  content: "";
+  display: block;
+  width: 160px;
+  height: 20px;
+  margin: -10px auto 0;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.7), transparent);
+  filter: blur(5px);
+}
+
+/* INVENTÁRIO */
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu {
+  background: #c6c6c6;
+  padding: 10px;
+  border: 2px solid #555;
+  box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #555;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+
+/* BOTÃO FECHAR */
+.close-btn {
+  background: #aa0000;
+  border: 2px solid #000;
+  color: white;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.close-btn:hover {
+  background: #cc0000;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 4px;
+}
+
+.slot {
+  width: 40px;
+  height: 40px;
+  background: #8b8b8b;
+  box-shadow: inset -2px -2px 0 #fff, inset 2px 2px 0 #555;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.slot img {
+  max-width: 70%;
+  max-height: 70%;
+  image-rendering: pixelated;
+}
+
+.stack {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 10px;
+  color: white;
+  text-shadow: 1px 1px black;
+}
+
+.cursor {
+  position: fixed;
+  pointer-events: none;
+  width: 32px;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="login" id="login">
+  <div>Minecraft Login</div>
+  <input type="text" id="nick" placeholder="Seu nick">
+  <br>
+  <button onclick="login()">Entrar</button>
+  <div class="loading" id="loading">Entrando...</div>
+</div>
+
+<div class="chest" id="chest" onclick="abrirMenu()">
+  <img src="chest.png">
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="menu">
+    <div class="header">
+      <span id="invTitle">Baú</span>
+      <button class="close-btn" onclick="fecharMenu()">X</button>
+    </div>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<img id="cursor" class="cursor">
+
+<script>
+function login(){
+  const nick = document.getElementById("nick").value;
+  if(!nick) return alert("Digite um nick");
+
+  document.getElementById("loading").style.display = "block";
+
+  setTimeout(()=>{
+    document.getElementById("login").style.display = "none";
+    document.getElementById("chest").style.display = "block";
+    player.nome = nick;
+  },1000);
+}
+
+const player = {
+  nome: "airton4563",
+  github: "https://github.com/airton-web"
+};
+
+let inventory = new Array(27).fill(null);
+
+inventory[0] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/diamond.png", count:32, max:64};
+inventory[1] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/diamond.png", count:16, max:64};
+inventory[2] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/apple.png", count:5, max:64};
+inventory[3] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/apple.png", count:20, max:64};
+inventory[4] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/ender_pearl.png", count:8, max:16};
+inventory[5] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/diamond_sword.png", count:1, max:1};
+inventory[6] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/golden_apple.png", count:3, max:64};
+inventory[8] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/iron_ingot.png", count:12, max:64};
+inventory[9] = {img:"https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/1.20/assets/minecraft/textures/item/iron_ingot.png", count:40, max:64};
+inventory[13] = {head:true};
+
+let cursor = null;
+const cursorEl = document.getElementById("cursor");
+
+function abrirMenu(){
+  document.getElementById("overlay").style.display = "flex";
+  document.getElementById("invTitle").innerText = "Chest" ;
+  render();
+}
+
+function fecharMenu(){
+  document.getElementById("overlay").style.display = "none";
+}
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape"){
+    fecharMenu();
+  }
+});
+
+function render(){
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  inventory.forEach((item,i)=>{
+    const slot = document.createElement("div");
+    slot.className = "slot";
+
+    if(item){
+      let img = document.createElement("img");
+
+      if(item.head){
+        img.src = `https://minotar.net/helm/${player.nome}/32`;
+      } else {
+        img.src = item.img;
+      }
+
+      slot.appendChild(img);
+
+      if(item.count > 1 && !item.head){
+        const stack = document.createElement("div");
+        stack.className = "stack";
+        stack.innerText = item.count;
+        slot.appendChild(stack);
+      }
+    }
+
+    slot.onmousedown = (e)=>{
+      if(item?.head){
+        window.open(player.github, "_blank");
+        return;
+      }
+
+      if(e.button === 0){
+        if(cursor && item){
+          if(cursor.img === item.img){
+            let total = cursor.count + item.count;
+            if(total <= item.max){
+              item.count = total;
+              cursor = null;
+            } else {
+              item.count = item.max;
+              cursor.count = total - item.max;
+            }
+          } else {
+            [inventory[i], cursor] = [cursor, inventory[i]];
+          }
+        } else {
+          [inventory[i], cursor] = [cursor, inventory[i]];
+        }
+      }
+
+      if(e.button === 2){
+        if(item && !cursor){
+          cursor = {...item, count: Math.ceil(item.count/2)};
+          item.count = Math.floor(item.count/2);
+          if(item.count <= 0) inventory[i] = null;
+        } else if(cursor){
+          if(!item){
+            inventory[i] = {...cursor, count:1};
+            cursor.count--;
+          } else if(item.img === cursor.img && item.count < item.max){
+            item.count++;
+            cursor.count--;
+          }
+          if(cursor.count <= 0) cursor = null;
+        }
+      }
+
+      updateCursor();
+      render();
+    };
+
+    grid.appendChild(slot);
+  });
+}
+
+function updateCursor(){
+  if(cursor){
+    cursorEl.src = cursor.img;
+    cursorEl.style.display = "block";
+  } else {
+    cursorEl.style.display = "none";
+  }
+}
+
+document.addEventListener("mousemove",(e)=>{
+  cursorEl.style.left = e.pageX+"px";
+  cursorEl.style.top = e.pageY+"px";
+});
+
+document.addEventListener("contextmenu", e=>e.preventDefault());
+</script>
+
+</body>
+</html>
